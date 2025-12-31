@@ -1,10 +1,3 @@
-// script.js
-// 목표
-// - 데스크탑: 트랙패드/마우스 휠 "기본 스크롤"을 살리고, 스크롤이 멈추면 가장 가까운 슬라이드로 스냅
-// - 모바일: 스와이프 고무줄 저항감 + 릴리즈 시 한 장씩 스냅
-//
-// 주의: 이 파일에는 JS만 넣으세요. CSS를 섞으면 전체가 깨집니다.
-
 const stage = document.getElementById("stage");
 const slides = stage ? Array.from(stage.querySelectorAll(".slide")) : [];
 
@@ -35,16 +28,12 @@ if (!stage || slides.length === 0) {
     stage.scrollTo({ top: index * pageH(), left: 0, behavior });
   }
 
-  // ----------------------------
-  // Desktop: 기본 스크롤 + "멈추면 스냅"
-  // (트랙패드/관성 스크롤을 죽이지 않음)
-  // ----------------------------
+
   let desktopSnapTimer = null;
 
   function onDesktopScroll() {
     if (!isDesktop) return;
 
-    // 스크롤 중에는 타이머 리셋, 멈춘 뒤 스냅
     clearTimeout(desktopSnapTimer);
     desktopSnapTimer = setTimeout(() => {
       syncIndexFromScroll();
@@ -52,9 +41,7 @@ if (!stage || slides.length === 0) {
     }, 90);
   }
 
-  // ----------------------------
-  // Mobile: 고무줄 스와이프 + 한 장씩 스냅
-  // ----------------------------
+
   let startY = 0;
   let lastY = 0;
   let startTime = 0;
@@ -64,14 +51,12 @@ if (!stage || slides.length === 0) {
   let currentTop = 0;
   let springRaf = null;
 
-  // 스와이프 판정
-  const MIN_DIST = 55;
+  const MIN_DIST = 40;
   const MAX_TIME = 500;
 
-  // 고무줄 느낌(취향)
-  const DRAG_FOLLOW = 0.35;
-  const EDGE_RESIST = 0.22;
-  const RELEASE_SNAP = 0.22;
+  const DRAG_FOLLOW = 0.25;
+  const EDGE_RESIST = 0.3;
+  const RELEASE_SNAP = 0.15;
 
   function maxScrollTop() {
     return (slides.length - 1) * pageH();
@@ -176,9 +161,7 @@ if (!stage || slides.length === 0) {
     }, 90);
   }
 
-  // ----------------------------
-  // 모드 업데이트
-  // ----------------------------
+  
   function applyMode() {
     syncIndexFromScroll();
     goTo(index, "auto");
@@ -194,7 +177,6 @@ if (!stage || slides.length === 0) {
 
   window.addEventListener("resize", () => goTo(index, "auto"));
 
-  // 키보드(데스크탑 전시용)
   window.addEventListener("keydown", (e) => {
     if (!isDesktop) return;
     if (e.key === "ArrowDown" || e.key === "PageDown") goTo(index + 1);
@@ -203,7 +185,6 @@ if (!stage || slides.length === 0) {
     if (e.key === "End") goTo(slides.length - 1);
   });
 
-  // 이벤트 바인딩
   stage.addEventListener("scroll", onDesktopScroll);
   stage.addEventListener("scroll", onMobileScroll);
 
